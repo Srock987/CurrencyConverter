@@ -38,7 +38,10 @@ class CurrencyViewModel : BaseViewModel() {
 
     private fun onRetrieveCurrencySuccess(newCurrency: Currency){
         currency.value = newCurrency
+
         Log.d("CurrencyViewModel","Success on receiving currency")
+        Log.d("CurrencyViewModel",newCurrency.toString())
+
 
     }
 
