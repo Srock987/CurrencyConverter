@@ -44,7 +44,7 @@ dependencies {
     implementation 'com.mikhaellopez:circularimageview:4.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     implementation 'com.michaelfotiadis:android-country-flags:1.0.3'
-
+    implementation 'com.jwang123.flagkit:flagkit:1.0'
 
     // Dagger2
     implementation "com.google.dagger:dagger:$rootProject.daggerVer"

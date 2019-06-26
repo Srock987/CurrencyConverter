@@ -6,7 +6,7 @@
                                                    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <com.mikhaellopez.circularimageview.CircularImageView
-            android:id="@+id/flag_image_view"
+            android:id="@+id/flag_exchange_image_view"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:src="@mipmap/ic_launcher"
@@ -18,27 +18,30 @@
     <TextView
             android:layout_marginStart="8dp"
             android:text="@string/gbp"
-            android:id="@+id/currency_short_name"
+            android:id="@+id/currency_exchange_short_name"
+            android:textAppearance="@android:style/TextAppearance.Material.Headline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@+id/flag_image_view"
-            app:layout_constraintLeft_toRightOf="@+id/flag_image_view"
-            app:layout_constraintBottom_toTopOf="@+id/currency_long_name"
+            app:layout_constraintTop_toTopOf="@+id/flag_exchange_image_view"
+            app:layout_constraintLeft_toRightOf="@+id/flag_exchange_image_view"
+            app:layout_constraintBottom_toTopOf="@+id/currency_exchange_long_name"
     />
 
     <TextView
             android:layout_marginStart="8dp"
             android:text="@string/british_pound"
-            android:id="@+id/currency_long_name"
+            android:id="@+id/currency_exchange_long_name"
+            android:textAppearance="@android:style/TextAppearance.Material.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/currency_short_name"
-            app:layout_constraintLeft_toRightOf="@+id/flag_image_view"
-            app:layout_constraintBottom_toBottomOf="@+id/flag_image_view"
+            app:layout_constraintTop_toBottomOf="@id/currency_exchange_short_name"
+            app:layout_constraintLeft_toRightOf="@+id/flag_exchange_image_view"
+            app:layout_constraintBottom_toBottomOf="@+id/flag_exchange_image_view"
     />
 
     <EditText
-            android:id="@+id/currency_input_value"
+            android:id="@+id/currency_exchange_input_value"
+            android:enabled="false"
             android:text="@string/_100_0"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

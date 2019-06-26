@@ -1,4 +1,4 @@
-package com.srock.currencyconverter.models
+package com.srock.currencyconverter.viewmodels
 
 import androidx.lifecycle.ViewModel
 import com.srock.currencyconverter.networking.NetworkModule

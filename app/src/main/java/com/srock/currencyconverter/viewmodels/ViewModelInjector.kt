@@ -1,4 +1,4 @@
-package com.srock.currencyconverter.models
+package com.srock.currencyconverter.viewmodels
 
 import com.srock.currencyconverter.networking.NetworkModule
 import dagger.Component
