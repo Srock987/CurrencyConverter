@@ -7,10 +7,6 @@ import io.reactivex.schedulers.Schedulers
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class CurrencyRepository(var service : CurrencyService) {
-
-    fun getCurrenciesUpdates(currencyName: String) : Observable<Currency>{
-       return Observable.interval(1,TimeUnit.SECONDS,Schedulers.io()).flatMap{ service.getCurrency(currencyName) }
-    }
-
+interface CurrencyRepository{
+    fun getCurrenciesUpdates(currencyName: String) : Observable<Currency>
 }

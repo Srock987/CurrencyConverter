@@ -3,7 +3,7 @@
     <string name="country_flag">Country Flag</string>
     <string name="gbp">GBP</string>
     <string name="british_pound">British Pound</string>
-    <string name="_100_0">100.0</string>
+    <string name="_100">100</string>
 
     <string-array name="currency_to_country_codes" >
         <item>AUD,AU</item>

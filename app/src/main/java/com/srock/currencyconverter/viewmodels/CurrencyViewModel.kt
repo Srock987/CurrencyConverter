@@ -3,65 +3,62 @@ package com.srock.currencyconverter.viewmodels
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.srock.currencyconverter.data.Currency
-import com.srock.currencyconverter.data.CurrencyListed
-import com.srock.currencyconverter.data.Values
+import com.srock.currencyconverter.data.*
 import com.srock.currencyconverter.networking.CurrencyRepository
+import com.srock.currencyconverter.networking.ViewStateLoadUseCase
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
+import io.reactivex.functions.BiFunction
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.BehaviorSubject
 import javax.inject.Inject
 
 class CurrencyViewModel : BaseViewModel() {
 
     private lateinit var subscription: Disposable
 
-    @Inject lateinit var repository: CurrencyRepository
+    @Inject lateinit var viewStateLoadUseCase: ViewStateLoadUseCase
 
-    private var currency: Currency? = null
+    private var inputSubject = BehaviorSubject.createDefault(100.0f)
 
-
-    private var inputAmount: Float = 100.0f
-
-    private val currencyValue: MutableLiveData<CurrencyListed> by lazy {
-        MutableLiveData<CurrencyListed>().also {
-            loadCurrency(Values.STARTING_CURRENCY)
+    private val currencyValue: MutableLiveData<ViewState> by lazy {
+        MutableLiveData<ViewState>().also {
+            loadViewState(Values.STARTING_CURRENCY,false)
         }
     }
 
-    fun getCurrency() : LiveData<CurrencyListed>{
+    fun getViewState() : LiveData<ViewState>{
         return currencyValue
     }
 
     fun inputChanged(inputString: String){
-        val newInputAmount = inputString.toFloat()
-        inputAmount = newInputAmount
-        currency?.let {  currencyValue.value = CurrencyListed(newInputAmount,it) }
-
+        val newInputAmount = if (inputString.isEmpty()) 0.0f else inputString.toFloat()
+        inputSubject.onNext(newInputAmount)
     }
 
     fun changeCurrency(currencyName: String){
         subscription.dispose()
-        loadCurrency(currencyName)
+        loadViewState(currencyName,true)
     }
 
-    private fun loadCurrency(currencyName: String) {
-        subscription = repository.getCurrenciesUpdates(currencyName)
+
+    private fun loadViewState(currencyName: String, scrollNeeded: Boolean) {
+        subscription = viewStateLoadUseCase.loadViewState(inputSubject,currencyName,scrollNeeded)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { onRetrieveCurrencySuccess(it)},
-                { onRetrieveCurrencyError() }
+                { onRetrieveViewStateSuccess(it) },
+                { onRetrieveViewStateError() }
             )
     }
 
-    private fun onRetrieveCurrencySuccess(newCurrency: Currency){
-        currency = newCurrency
-        currencyValue.value = CurrencyListed(inputAmount,newCurrency)
+    private fun onRetrieveViewStateSuccess(viewState: ViewState){
+        currencyValue.value = viewState
     }
 
-    private fun onRetrieveCurrencyError(){
-        Log.d("CurrencyViewModel","Error on receiving currency")
+    private fun onRetrieveViewStateError(){
+        Log.d("CurrencyViewModel","Error on receiving viewState")
     }
 
     fun updateContinuously(){

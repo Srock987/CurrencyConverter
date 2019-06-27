@@ -61,6 +61,13 @@ object NetworkModule {
     @Reusable
     @JvmStatic
     fun provideCurrencyRepository(service: CurrencyService) : CurrencyRepository {
-        return CurrencyRepository(service)
+        return CurrencyRepositoryImpl(service)
+    }
+
+    @Provides
+    @Reusable
+    @JvmStatic
+    fun provideViewStateLoadUseCase(repository: CurrencyRepository) : ViewStateLoadUseCase {
+        return ViewStateLoadUseCase(repository)
     }
 }

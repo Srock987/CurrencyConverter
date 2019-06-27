@@ -1,7 +1,6 @@
 package com.srock.currencyconverter.adapter
 
 import android.icu.util.Currency
-import android.os.Bundle
 import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.srock.currencyconverter.R
 import com.srock.currencyconverter.adapter.CurrencyAdapter.CurrencyViewHolder
 import com.srock.currencyconverter.data.CurrencyExchange
-import com.srock.currencyconverter.data.CurrencyListed
 import com.srock.currencyconverter.utils.CountryInformation
 import com.srock.currencyconverter.utils.onChange
 import kotlinx.android.synthetic.main.currency_exchange_view.view.*
@@ -26,43 +24,46 @@ class CurrencyAdapter(private val inputListener: InputListener) : RecyclerView.A
         const val TYPE_EXCHANGE = 1
     }
 
-    private var currencyValues : CurrencyListed? = null
+    private var currencyExchangesList : List<CurrencyExchange> = emptyList<CurrencyExchange>()
     private val decimal = DecimalFormat("0.00")
 
-    fun feedData(latestCurrency: CurrencyListed){
-
-        currencyValues = latestCurrency
-        notifyDataSetChanged()
-//        currencyValues?.let {
-//            val diffResult = DiffUtil.calculateDiff(CurrencyDiffCallback(it,latestCurrency))
-//            diffResult.dispatchUpdatesTo(this)
-//        } ?: run {
-//
-//        }
+    fun feedData(currencyExchangeListUpdate: List<CurrencyExchange>){
+        val diffResult = DiffUtil.calculateDiff(CurrencyDiffCallback(currencyExchangesList,currencyExchangeListUpdate))
+        currencyExchangesList = currencyExchangeListUpdate
+        diffResult.dispatchUpdatesTo(this)
     }
+
+    fun gainMainFocus() {
+
+    }
+
+
 
     interface BinderHolder{
         fun bind(exchange: CurrencyExchange, viewType: Int, clickListener: InputListener)
     }
 
     inner class CurrencyViewHolder(private val view: View) : RecyclerView.ViewHolder(view), BinderHolder {
+
         override fun bind(exchange: CurrencyExchange, viewType: Int, clickListener: InputListener) {
             when(viewType){
                 TYPE_MAIN -> {
-                    view.currency_main_short_name.text = exchange.key
-                    view.currency_main_long_name.text = Currency.getInstance(exchange.key).displayName
-                    view.currency_main_input_value.onChange { text -> clickListener.onInputChanged(text) }
-                    view.flag_main_image_view.setImageResource(CountryInformation.getFlagId(exchange.key,view.context))
+                    view.currencyMainShortName.text = exchange.key
+                    view.currencyMainLongName.text = Currency.getInstance(exchange.key).displayName
+                    view.currencyMainInputValue.onChange { text -> clickListener.onInputChanged(text) }
+                    view.flagMainImageView.setImageResource(CountryInformation.getFlagId(exchange.key,view.context))
                 }
                 TYPE_EXCHANGE -> {
                     view.setOnClickListener { clickListener.onItemClicked(exchange.key) }
-                    view.currency_exchange_short_name.text = exchange.key
-                    view.currency_exchange_long_name.text = Currency.getInstance(exchange.key).displayName
-                    view.currency_exchange_input_value.text = Editable.Factory.getInstance().newEditable(decimal.format(exchange.rate).toString())
-                    view.flag_exchange_image_view.setImageResource(CountryInformation.getFlagId(exchange.key,view.context))
+                    view.currencyExchangeShortName.text = exchange.key
+                    view.currencyExchangeLongName.text = Currency.getInstance(exchange.key).displayName
+                    view.currencyExchangeInputValue.text = Editable.Factory.getInstance().newEditable(decimal.format(exchange.rate).toString())
+                    view.flagExchangeImageView.setImageResource(CountryInformation.getFlagId(exchange.key,view.context))
                 }
             }
         }
+
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CurrencyViewHolder {
@@ -74,41 +75,23 @@ class CurrencyAdapter(private val inputListener: InputListener) : RecyclerView.A
     }
 
     override fun getItemViewType(position: Int): Int {
-        val type = when (position) {
-            0 -> TYPE_MAIN
-            else -> TYPE_EXCHANGE
-        }
-        return type
+        return positionType(position)
+    }
+
+    fun positionType(position: Int) : Int {
+        return if (position == 0) TYPE_MAIN else TYPE_EXCHANGE
     }
 
     override fun getItemCount(): Int {
-        currencyValues?.let {
-            return it.exchanges.size + 1
-        }
-        return 0
+        return currencyExchangesList.size
     }
 
     override fun onBindViewHolder(holder: CurrencyViewHolder, position: Int) {
-        currencyValues?.let {
-            if (position == 0) {
-                holder.bind(CurrencyExchange(it.mainCurrency,it.multiplier),TYPE_MAIN,inputListener)
-            } else {
-                val exchange = it.exchanges[position-1]
-                holder.bind(CurrencyExchange(exchange.key,it.multiplier*exchange.rate),TYPE_EXCHANGE,inputListener)
-            }
+        if (position == 0) {
+            holder.bind(currencyExchangesList[position],TYPE_MAIN,inputListener)
+        } else {
+            holder.bind(currencyExchangesList[position],TYPE_EXCHANGE,inputListener)
         }
-
     }
 
-//    override fun onBindViewHolder(holder: CurrencyViewHolder, position: Int, payloads: MutableList<Any>) {
-//        if (payloads.isEmpty()) return
-//        else {
-//            val bundle = payloads[0] as Bundle
-//            for(key in bundle.keySet()) {
-//                if (key == CurrencyListed.RATE){
-//
-//                }
-//            }
-//        }
-//    }
 }

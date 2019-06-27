@@ -1,10 +1,9 @@
 package com.srock.currencyconverter
 
 import com.srock.currencyconverter.data.Currency
-import com.srock.currencyconverter.data.CurrencyListed
+import com.srock.currencyconverter.data.CurrencyExchange
 import org.junit.Test
 import java.util.*
-import kotlin.collections.LinkedHashMap
 
 class CurrencyTransformationTest {
 
@@ -12,20 +11,30 @@ class CurrencyTransformationTest {
     fun testCurrencyTransformation(){
         val base = "EUR"
         val date = Date()
-        val firstPair = ("GBP" to 2.0f)
+        val middlePair = ("GBP" to 2.0f)
         val lastPair = ("PLN" to 0.5f)
-        val ratesMap = linkedMapOf<String,Float>(firstPair,lastPair)
+        val ratesMap = linkedMapOf<String,Float>(middlePair,lastPair)
         val currency = Currency(base,date,ratesMap)
         val multiplier = 4.0f
 
-        val listedCurrency = CurrencyListed(multiplier,currency)
+        val listedCurrency = CurrencyExchange.Factory.transformCurrency(currency)
 
-        assert(listedCurrency.mainCurrency == currency.base)
-        assert(listedCurrency.multiplier == multiplier)
-        assert(listedCurrency.exchanges.size == 2)
-        assert(listedCurrency.exchanges.first().key == firstPair.first)
-        assert((listedCurrency.exchanges.first().rate * multiplier).equals(multiplier * firstPair.second))
-        assert(listedCurrency.exchanges.last().key == lastPair.first)
-        assert((listedCurrency.exchanges.last().rate * multiplier).equals(multiplier * lastPair.second))
+        for ((index,exchange) in listedCurrency.withIndex()){
+            when (index){
+                0 -> {
+                    assert(exchange.key==base)
+                    assert(exchange.rate.equals(1.0f))
+                }
+                1 -> {
+                    assert(exchange.key==middlePair.first)
+                    assert(exchange.rate.equals(middlePair.second))
+                }
+                2 -> {
+                    assert(exchange.key==lastPair.first)
+                    assert(exchange.rate.equals(lastPair.second))
+                }
+            }
+        }
+
     }
 }
