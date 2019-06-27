@@ -35,11 +35,6 @@ class ServiceTest {
 
         val interceptor = HttpLoggingInterceptor()
         interceptor.level = HttpLoggingInterceptor.Level.BASIC
-
-//        val cacheDir = File(application.cacheDir, UUID.randomUUID().toString())
-//        // 10 MiB cache
-//        val cache = Cache(cacheDir, 10 * 1024 * 1024)
-
         val client = OkHttpClient.Builder()
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(60, TimeUnit.SECONDS)
@@ -59,7 +54,6 @@ class ServiceTest {
     @Test
     fun verify_api_call(){
         val currencyName = "GBP"
-
         currencyService.getCurrency(currencyName)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

@@ -37,7 +37,6 @@ class CurrencyActivity : AppCompatActivity(), InputListener {
         model.getCurrency().observe(this, Observer { currency ->
             adapter.feedData(currency)
         })
-        model.loadCurrency("EUR")
     }
 
     override fun onResume() {
@@ -57,7 +56,7 @@ class CurrencyActivity : AppCompatActivity(), InputListener {
     }
 
     override fun onItemClicked(key: String) {
-        model.loadCurrency(key)
+        model.changeCurrency(key)
         currency_recycler_view.smoothScrollToPosition(0)
     }
 }

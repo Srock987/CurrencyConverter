@@ -38,9 +38,9 @@ object NetworkModule {
 //        val cache = Cache(cacheDir, 10 * 1024 * 1024)
 
         return OkHttpClient.Builder()
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(60, TimeUnit.SECONDS)
-            .writeTimeout(60, TimeUnit.SECONDS)
+            .connectTimeout(1, TimeUnit.SECONDS)
+            .readTimeout(2, TimeUnit.SECONDS)
+            .writeTimeout(2, TimeUnit.SECONDS)
             .addInterceptor(interceptor)
             .build()
     }

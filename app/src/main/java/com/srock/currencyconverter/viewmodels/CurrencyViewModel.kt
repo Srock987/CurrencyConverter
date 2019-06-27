@@ -3,22 +3,18 @@ package com.srock.currencyconverter.viewmodels
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.google.gson.Gson
 import com.srock.currencyconverter.data.Currency
-import com.srock.currencyconverter.data.CurrencyValues
+import com.srock.currencyconverter.data.CurrencyListed
+import com.srock.currencyconverter.data.Values
 import com.srock.currencyconverter.networking.CurrencyRepository
-import com.srock.currencyconverter.networking.CurrencyService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import okhttp3.OkHttpClient
 import javax.inject.Inject
 
 class CurrencyViewModel : BaseViewModel() {
 
     private lateinit var subscription: Disposable
-
-//    @Inject lateinit var currencyService: CurrencyService
 
     @Inject lateinit var repository: CurrencyRepository
 
@@ -27,20 +23,29 @@ class CurrencyViewModel : BaseViewModel() {
 
     private var inputAmount: Float = 100.0f
 
-    private val currencyValue: MutableLiveData<CurrencyValues> = MutableLiveData()
+    private val currencyValue: MutableLiveData<CurrencyListed> by lazy {
+        MutableLiveData<CurrencyListed>().also {
+            loadCurrency(Values.STARTING_CURRENCY)
+        }
+    }
 
-    fun getCurrency() : LiveData<CurrencyValues>{
+    fun getCurrency() : LiveData<CurrencyListed>{
         return currencyValue
     }
 
     fun inputChanged(inputString: String){
         val newInputAmount = inputString.toFloat()
         inputAmount = newInputAmount
-        currency?.let {  currencyValue.value = CurrencyValues(it,newInputAmount) }
+        currency?.let {  currencyValue.value = CurrencyListed(newInputAmount,it) }
 
     }
 
-    fun loadCurrency(currencyName: String) {
+    fun changeCurrency(currencyName: String){
+        subscription.dispose()
+        loadCurrency(currencyName)
+    }
+
+    private fun loadCurrency(currencyName: String) {
         subscription = repository.getCurrenciesUpdates(currencyName)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -52,7 +57,7 @@ class CurrencyViewModel : BaseViewModel() {
 
     private fun onRetrieveCurrencySuccess(newCurrency: Currency){
         currency = newCurrency
-        currencyValue.value = CurrencyValues(newCurrency,inputAmount)
+        currencyValue.value = CurrencyListed(inputAmount,newCurrency)
     }
 
     private fun onRetrieveCurrencyError(){
